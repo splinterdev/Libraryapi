@@ -7,6 +7,8 @@ import com.github.IsaacMartins.libraryapi.exceptions.DuplicatedRegisterException
 import com.github.IsaacMartins.libraryapi.exceptions.NotAllowedOperation;
 import com.github.IsaacMartins.libraryapi.model.entities.Author;
 import com.github.IsaacMartins.libraryapi.service.AuthorService;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -18,20 +20,17 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/autores")
+@RequiredArgsConstructor
 public class AuthorController {
 
     private final AuthorService service;
-
-    public AuthorController(AuthorService service) {
-        this.service = service;
-    }
 
     /**
      * ResponseEntity<Object> ⇾ Classe para definir o response da request. Define-se o tipo do body da response dentro dos sinais <>
      * com uma WrapperClass do tipo do retorno. Object pois pode não ser retornado nenhum body ou pode ser retornado um DTO de erro (também poderia ser <?>)
      */
     @PostMapping
-    public ResponseEntity<Object> save(@RequestBody RequestAuthorDTO requestDTO) {
+    public ResponseEntity<Object> save(@RequestBody @Valid RequestAuthorDTO requestDTO) {
 
         try{
             Author authorEntity = requestDTO.mapToAuthor();
@@ -98,7 +97,7 @@ public class AuthorController {
                                                          @RequestParam(value = "nationality", required = false) String nationality) {
 
         List<ResponseAuthorDTO> authorDTOS = new ArrayList<>();
-        List<Author> authors = service.search(name, nationality);
+        List<Author> authors = service.searchByExample(name, nationality);
 
         authors.forEach(a -> authorDTOS.add(new ResponseAuthorDTO(a.getId(), a.getName(), a.getBirthDate(), a.getNationality())));
 
@@ -106,7 +105,7 @@ public class AuthorController {
     }
 
     @PutMapping("{id}")
-    public ResponseEntity<Object> update(@PathVariable("id") String id, @RequestBody RequestAuthorDTO authorDTO) {
+    public ResponseEntity<Object> update(@PathVariable("id") String id, @RequestBody @Valid RequestAuthorDTO authorDTO) {
 
         try {
             Optional<Author> possibleAuthor = service.getAuthor(UUID.fromString(id));
