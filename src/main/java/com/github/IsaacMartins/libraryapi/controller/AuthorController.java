@@ -7,6 +7,7 @@ import com.github.IsaacMartins.libraryapi.exceptions.DuplicatedRegisterException
 import com.github.IsaacMartins.libraryapi.exceptions.NotAllowedOperation;
 import com.github.IsaacMartins.libraryapi.model.entities.Author;
 import com.github.IsaacMartins.libraryapi.service.AuthorService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -18,13 +19,10 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/autores")
+@RequiredArgsConstructor
 public class AuthorController {
 
     private final AuthorService service;
-
-    public AuthorController(AuthorService service) {
-        this.service = service;
-    }
 
     /**
      * ResponseEntity<Object> ⇾ Classe para definir o response da request. Define-se o tipo do body da response dentro dos sinais <>

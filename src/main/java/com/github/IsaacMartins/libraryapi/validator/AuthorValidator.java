@@ -3,18 +3,16 @@ package com.github.IsaacMartins.libraryapi.validator;
 import com.github.IsaacMartins.libraryapi.exceptions.DuplicatedRegisterException;
 import com.github.IsaacMartins.libraryapi.model.entities.Author;
 import com.github.IsaacMartins.libraryapi.repository.AuthorRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.util.Optional;
 
 @Component
+@RequiredArgsConstructor
 public class AuthorValidator {
 
     private final AuthorRepository repository;
-
-    public AuthorValidator(AuthorRepository repository) {
-        this.repository = repository;
-    }
 
     public void validate(Author author) {
         if(isRegisteredAuthor(author)) {
