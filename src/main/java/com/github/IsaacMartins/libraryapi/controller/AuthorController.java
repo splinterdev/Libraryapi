@@ -7,6 +7,7 @@ import com.github.IsaacMartins.libraryapi.exceptions.DuplicatedRegisterException
 import com.github.IsaacMartins.libraryapi.exceptions.NotAllowedOperation;
 import com.github.IsaacMartins.libraryapi.model.entities.Author;
 import com.github.IsaacMartins.libraryapi.service.AuthorService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -29,7 +30,7 @@ public class AuthorController {
      * com uma WrapperClass do tipo do retorno. Object pois pode não ser retornado nenhum body ou pode ser retornado um DTO de erro (também poderia ser <?>)
      */
     @PostMapping
-    public ResponseEntity<Object> save(@RequestBody RequestAuthorDTO requestDTO) {
+    public ResponseEntity<Object> save(@RequestBody @Valid RequestAuthorDTO requestDTO) {
 
         try{
             Author authorEntity = requestDTO.mapToAuthor();
@@ -104,7 +105,7 @@ public class AuthorController {
     }
 
     @PutMapping("{id}")
-    public ResponseEntity<Object> update(@PathVariable("id") String id, @RequestBody RequestAuthorDTO authorDTO) {
+    public ResponseEntity<Object> update(@PathVariable("id") String id, @RequestBody @Valid RequestAuthorDTO authorDTO) {
 
         try {
             Optional<Author> possibleAuthor = service.getAuthor(UUID.fromString(id));

@@ -4,7 +4,7 @@ import org.springframework.http.HttpStatus;
 
 import java.util.List;
 
-public record ErrorResponse(int status, String message, List<FieldError> errors) {
+public record ErrorResponse(int status, String message, List<InvalidField> errors) {
 
     public static ErrorResponse defaultResponse(String message) {
         return new ErrorResponse(HttpStatus.BAD_REQUEST.value(), message, List.of());

@@ -39,7 +39,7 @@ public class AuthorService {
 
     public void delete(Author author) {
         if(hasBooks(author)) {
-            throw new NotAllowedOperation("The author cannot be deleted because he has registered books!");
+            throw new NotAllowedOperation("The author cannot be deleted because he has registered books.");
         }
         authorRepository.delete(author);
     }
