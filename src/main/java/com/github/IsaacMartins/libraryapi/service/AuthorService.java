@@ -6,6 +6,8 @@ import com.github.IsaacMartins.libraryapi.repository.AuthorRepository;
 import com.github.IsaacMartins.libraryapi.repository.BookRepository;
 import com.github.IsaacMartins.libraryapi.validator.AuthorValidator;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Example;
+import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -44,17 +46,17 @@ public class AuthorService {
         authorRepository.delete(author);
     }
 
-    public List<Author> search(String name, String nationality) {
-
-        if(name != null && nationality != null) {
-            return authorRepository.findByNameAndNationality(name, nationality);
-        } else if(name != null) {
-            return authorRepository.findByName(name);
-        } else if(nationality != null) {
-            return authorRepository.findByNationality(nationality);
-        }
-
-        return authorRepository.findAll();
+    public List<Author> searchByExample(String name, String nationality) {
+        Author author = new Author();
+        author.setName(name);
+        author.setNationality(nationality);
+        ExampleMatcher matcher = ExampleMatcher
+                .matching()
+                .withIgnoreNullValues()
+                .withIgnoreCase()
+                .withStringMatcher(ExampleMatcher.StringMatcher.CONTAINING); // metodo que faz a query com like. No caso de containing é o mesmo que: like %string%;
+        Example<Author> authorExample = Example.of(author, matcher);
+        return authorRepository.findAll(authorExample);
     }
 
     private boolean hasBooks(Author author) {

@@ -97,7 +97,7 @@ public class AuthorController {
                                                          @RequestParam(value = "nationality", required = false) String nationality) {
 
         List<ResponseAuthorDTO> authorDTOS = new ArrayList<>();
-        List<Author> authors = service.search(name, nationality);
+        List<Author> authors = service.searchByExample(name, nationality);
 
         authors.forEach(a -> authorDTOS.add(new ResponseAuthorDTO(a.getId(), a.getName(), a.getBirthDate(), a.getNationality())));
 
