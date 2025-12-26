@@ -1,4 +1,4 @@
-package com.github.IsaacMartins.libraryapi.controller.dto;
+package com.github.IsaacMartins.libraryapi.controller.dto.authorDTOs;
 
 import com.github.IsaacMartins.libraryapi.model.entities.Author;
 import jakarta.validation.constraints.NotBlank;
