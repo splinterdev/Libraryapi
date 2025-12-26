@@ -14,7 +14,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import java.net.URI;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -100,8 +99,6 @@ public class AuthorController {
                         .stream()
                         .map(mapper::toDTO)
                         .collect(Collectors.toList());
-
-//        authors.forEach(a -> authorDTOS.add(new ResponseAuthorDTO(a.getId(), a.getName(), a.getBirthDate(), a.getNationality())));
 
         return ResponseEntity.ok(authorDTOS); // 200 - OK. Body será um Array de authors
     }
