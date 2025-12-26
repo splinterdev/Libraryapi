@@ -3,6 +3,7 @@ package com.github.IsaacMartins.libraryapi.controller;
 import com.github.IsaacMartins.libraryapi.controller.dto.ErrorResponse;
 import com.github.IsaacMartins.libraryapi.controller.dto.authorDTOs.RequestAuthorDTO;
 import com.github.IsaacMartins.libraryapi.controller.dto.authorDTOs.ResponseAuthorDTO;
+import com.github.IsaacMartins.libraryapi.controller.mappers.AuthorMapper;
 import com.github.IsaacMartins.libraryapi.exceptions.DuplicatedRegisterException;
 import com.github.IsaacMartins.libraryapi.exceptions.NotAllowedOperation;
 import com.github.IsaacMartins.libraryapi.model.entities.Author;
@@ -17,6 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/autores")
@@ -24,6 +26,7 @@ import java.util.UUID;
 public class AuthorController {
 
     private final AuthorService service;
+    private final AuthorMapper mapper;
 
     /**
      * ResponseEntity<Object> ⇾ Classe para definir o response da request. Define-se o tipo do body da response dentro dos sinais <>
@@ -33,14 +36,14 @@ public class AuthorController {
     public ResponseEntity<Object> save(@RequestBody @Valid RequestAuthorDTO requestDTO) {
 
         try{
-            Author authorEntity = requestDTO.mapToAuthor();
-            service.save(authorEntity);
+            Author author = mapper.toEntity(requestDTO);
+            service.save(author);
 
             // Isso gera um URL para acessar o autor. Exemplo ⇾ http://localhost:8080/autores/326cff2d-300b-4967-a171-47b81ecc7be7
             URI location = ServletUriComponentsBuilder
                     .fromCurrentRequest()
                     .path("/{id}")
-                    .buildAndExpand(authorEntity.getId())
+                    .buildAndExpand(author.getId())
                     .toUri();
 
             return ResponseEntity.created(location).build(); //Código: 201 Created; Header: Location - http://localhost:8080/autores/...
@@ -56,15 +59,11 @@ public class AuthorController {
     @GetMapping("{id}")
     public ResponseEntity<ResponseAuthorDTO> searchOne(@PathVariable String id) {
 
-        Optional<Author> possibleAuthor = service.getAuthor(UUID.fromString(id));
-
-        if(possibleAuthor.isPresent()) {
-            Author author = possibleAuthor.get();
-            ResponseAuthorDTO responseDTO = new ResponseAuthorDTO(author.getId(), author.getName(), author.getBirthDate(), author.getNationality());
-            return ResponseEntity.ok(responseDTO);
-        }
-
-        return ResponseEntity.notFound().build(); // Código: 404 Not Found;
+        return service.getAuthor(UUID.fromString(id))
+                .map(author -> {
+                    ResponseAuthorDTO responseDTO = mapper.toDTO(author);
+                    return ResponseEntity.ok(responseDTO);
+                }).orElseGet(() -> ResponseEntity.notFound().build()); // Código: 404 Not Found. Se o optional de getAuthor não estiver presente, o retorno será o orElseGet();
     }
 
     // poderia retornar apenas 204 No Content mesmo com o autor não encontrado que também estaria certo (conceito de indempotencia)
@@ -96,10 +95,13 @@ public class AuthorController {
     public ResponseEntity<List<ResponseAuthorDTO>> search(@RequestParam(value = "name", required = false) String name,
                                                          @RequestParam(value = "nationality", required = false) String nationality) {
 
-        List<ResponseAuthorDTO> authorDTOS = new ArrayList<>();
         List<Author> authors = service.searchByExample(name, nationality);
+        List<ResponseAuthorDTO> authorDTOS = authors
+                        .stream()
+                        .map(mapper::toDTO)
+                        .collect(Collectors.toList());
 
-        authors.forEach(a -> authorDTOS.add(new ResponseAuthorDTO(a.getId(), a.getName(), a.getBirthDate(), a.getNationality())));
+//        authors.forEach(a -> authorDTOS.add(new ResponseAuthorDTO(a.getId(), a.getName(), a.getBirthDate(), a.getNationality())));
 
         return ResponseEntity.ok(authorDTOS); // 200 - OK. Body será um Array de authors
     }
