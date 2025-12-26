@@ -1,8 +1,8 @@
 package com.github.IsaacMartins.libraryapi.controller;
 
 import com.github.IsaacMartins.libraryapi.controller.dto.ErrorResponse;
-import com.github.IsaacMartins.libraryapi.controller.dto.RequestAuthorDTO;
-import com.github.IsaacMartins.libraryapi.controller.dto.ResponseAuthorDTO;
+import com.github.IsaacMartins.libraryapi.controller.dto.authorDTOs.RequestAuthorDTO;
+import com.github.IsaacMartins.libraryapi.controller.dto.authorDTOs.ResponseAuthorDTO;
 import com.github.IsaacMartins.libraryapi.exceptions.DuplicatedRegisterException;
 import com.github.IsaacMartins.libraryapi.exceptions.NotAllowedOperation;
 import com.github.IsaacMartins.libraryapi.model.entities.Author;
