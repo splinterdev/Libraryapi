@@ -1,8 +1,9 @@
 package com.github.IsaacMartins.libraryapi.controller.common;
 
-
 import com.github.IsaacMartins.libraryapi.controller.dto.ErrorResponse;
 import com.github.IsaacMartins.libraryapi.controller.dto.InvalidField;
+import com.github.IsaacMartins.libraryapi.exceptions.DuplicatedRegisterException;
+import com.github.IsaacMartins.libraryapi.exceptions.NotAllowedOperation;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -21,5 +22,24 @@ public class GlobalExceptionHandler {
         List<InvalidField> errors = fieldErrors.stream().map(fe -> new InvalidField(fe.getField(), fe.getDefaultMessage())).toList();
 
         return new ErrorResponse(HttpStatus.UNPROCESSABLE_ENTITY.value(), "Validation error.", errors);
+    }
+
+    @ExceptionHandler(DuplicatedRegisterException.class)
+    @ResponseStatus(HttpStatus.CONFLICT) // 409
+    public ErrorResponse handleDuplicatedRegisterException(DuplicatedRegisterException e) {
+        return ErrorResponse.conflict(e.getMessage());
+    }
+
+    @ExceptionHandler(NotAllowedOperation.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST) // 400
+    public ErrorResponse handleNotAllowedOperation(NotAllowedOperation e) {
+        return ErrorResponse.defaultResponse(e.getMessage());
+    }
+
+    @ExceptionHandler(RuntimeException.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public ErrorResponse handleUntreatedErrors(RuntimeException e) {
+        return new ErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                "An unexpected error occurred. Please contact the administration.", List.of());
     }
 }
