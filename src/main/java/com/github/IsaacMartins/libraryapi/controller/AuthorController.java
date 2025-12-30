@@ -1,7 +1,7 @@
 package com.github.IsaacMartins.libraryapi.controller;
 
-import com.github.IsaacMartins.libraryapi.controller.dto.authorDTOs.RequestAuthorDTO;
-import com.github.IsaacMartins.libraryapi.controller.dto.authorDTOs.ResponseAuthorDTO;
+import com.github.IsaacMartins.libraryapi.controller.dto.authorDTOs.AuthorWithoutIdDTO;
+import com.github.IsaacMartins.libraryapi.controller.dto.authorDTOs.AuthorWithIdDTO;
 import com.github.IsaacMartins.libraryapi.controller.mappers.AuthorMapper;
 import com.github.IsaacMartins.libraryapi.model.entities.Author;
 import com.github.IsaacMartins.libraryapi.service.AuthorService;
@@ -28,7 +28,7 @@ public class AuthorController implements GenericController {
      * com uma WrapperClass do tipo do retorno. Object pois pode não ser retornado nenhum body ou pode ser retornado um DTO de erro (também poderia ser <?>)
      */
     @PostMapping
-    public ResponseEntity<Void> save(@RequestBody @Valid RequestAuthorDTO requestDTO) {
+    public ResponseEntity<Void> save(@RequestBody @Valid AuthorWithoutIdDTO requestDTO) {
 
         Author author = mapper.toEntity(requestDTO);
         service.save(author);
@@ -40,11 +40,11 @@ public class AuthorController implements GenericController {
     }
 
     @GetMapping("{id}")
-    public ResponseEntity<ResponseAuthorDTO> searchOne(@PathVariable String id) {
+    public ResponseEntity<AuthorWithIdDTO> searchOne(@PathVariable String id) {
 
         return service.getAuthor(UUID.fromString(id))
                 .map(author -> {
-                    ResponseAuthorDTO responseDTO = mapper.toDTO(author);
+                    AuthorWithIdDTO responseDTO = mapper.toAuthorWithIdDTO(author);
                     return ResponseEntity.ok(responseDTO);
                 }).orElseGet(() -> ResponseEntity.notFound().build()); // Código: 404 Not Found. Se o optional de getAuthor não estiver presente, o retorno será o orElseGet();
     }
@@ -69,20 +69,20 @@ public class AuthorController implements GenericController {
      * Quando não passados os paramtros, faz uma pesquisa de todos sem filtrar por nome e/ou nacionalidade.
      */
     @GetMapping
-    public ResponseEntity<List<ResponseAuthorDTO>> search(@RequestParam(value = "name", required = false) String name,
-                                                         @RequestParam(value = "nationality", required = false) String nationality) {
+    public ResponseEntity<List<AuthorWithIdDTO>> search(@RequestParam(value = "name", required = false) String name,
+                                                        @RequestParam(value = "nationality", required = false) String nationality) {
 
         List<Author> authors = service.searchByExample(name, nationality);
-        List<ResponseAuthorDTO> authorDTOS = authors
+        List<AuthorWithIdDTO> authorDTOS = authors
                         .stream()
-                        .map(mapper::toDTO)
+                        .map(mapper::toAuthorWithIdDTO)
                         .collect(Collectors.toList());
 
         return ResponseEntity.ok(authorDTOS); // 200 - OK. Body será um Array de authors
     }
 
     @PutMapping("{id}")
-    public ResponseEntity<Void> update(@PathVariable("id") String id, @RequestBody @Valid RequestAuthorDTO authorDTO) {
+    public ResponseEntity<Void> update(@PathVariable("id") String id, @RequestBody @Valid AuthorWithoutIdDTO authorDTO) {
 
         Optional<Author> possibleAuthor = service.getAuthor(UUID.fromString(id));
 
