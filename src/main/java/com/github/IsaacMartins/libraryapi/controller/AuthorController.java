@@ -4,16 +4,11 @@ import com.github.IsaacMartins.libraryapi.controller.dto.authorDTOs.AuthorWithou
 import com.github.IsaacMartins.libraryapi.controller.dto.authorDTOs.AuthorWithIdDTO;
 import com.github.IsaacMartins.libraryapi.controller.mappers.AuthorMapper;
 import com.github.IsaacMartins.libraryapi.model.entities.Author;
-import com.github.IsaacMartins.libraryapi.model.entities.UserEntity;
 import com.github.IsaacMartins.libraryapi.service.AuthorService;
-import com.github.IsaacMartins.libraryapi.service.SecurityService;
-import com.github.IsaacMartins.libraryapi.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import java.net.URI;
 import java.util.List;
