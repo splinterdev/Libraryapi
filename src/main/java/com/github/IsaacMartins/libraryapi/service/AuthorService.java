@@ -2,6 +2,7 @@ package com.github.IsaacMartins.libraryapi.service;
 
 import com.github.IsaacMartins.libraryapi.exceptions.NotAllowedOperation;
 import com.github.IsaacMartins.libraryapi.model.entities.Author;
+import com.github.IsaacMartins.libraryapi.model.entities.UserEntity;
 import com.github.IsaacMartins.libraryapi.repository.AuthorRepository;
 import com.github.IsaacMartins.libraryapi.repository.BookRepository;
 import com.github.IsaacMartins.libraryapi.validator.AuthorValidator;
@@ -21,9 +22,12 @@ public class AuthorService {
     private final AuthorRepository authorRepository;
     private final AuthorValidator validator;
     private final BookRepository bookRepository;
+    private final SecurityService securityService;
 
     public Author save(Author author) {
         validator.validate(author);
+        UserEntity loggedUser = securityService.getLoggedUser();
+        author.setUser(loggedUser);
         return authorRepository.save(author);
     }
 

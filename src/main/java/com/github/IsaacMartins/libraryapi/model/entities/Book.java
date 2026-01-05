@@ -51,7 +51,8 @@ public class Book {
     @Column(name = "update_date")
     private LocalDateTime updateDate;
 
-    @Column(name = "user_id")
-    private UUID userId;
+    @ManyToOne // MUITOS livros tem UM usuário responsável pelo seu cadastro.
+    @JoinColumn(name = "user_id")
+    private UserEntity user;
 }
 

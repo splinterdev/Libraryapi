@@ -2,6 +2,7 @@ package com.github.IsaacMartins.libraryapi.service;
 
 import com.github.IsaacMartins.libraryapi.model.entities.Book;
 import com.github.IsaacMartins.libraryapi.model.entities.BookGenre;
+import com.github.IsaacMartins.libraryapi.model.entities.UserEntity;
 import com.github.IsaacMartins.libraryapi.repository.BookRepository;
 import com.github.IsaacMartins.libraryapi.validator.BookValidator;
 import lombok.RequiredArgsConstructor;
@@ -21,9 +22,12 @@ public class BookService {
 
     private final BookRepository repository;
     private final BookValidator validator;
+    private final SecurityService securityService;
 
     public Book save(Book book) {
         validator.validate(book);
+        UserEntity loggedUser = securityService.getLoggedUser();
+        book.setUser(loggedUser);
         return repository.save(book);
     }
 
