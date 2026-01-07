@@ -24,6 +24,9 @@ public class UserEntity {
     @Column
     private String password;
 
+    @Column
+    private String email;
+
     // Conversão do tipo list para o tipo array de varchar (varchar[]) do banco
     @Type(ListArrayType.class)
     @Column(columnDefinition = "varchar[]")

@@ -71,7 +71,7 @@ public class AuthorController implements GenericController {
 
     /**
      * Query params (/autores?name=xxxxx&nationality=yyyyy) com parametros opcionais (required = false). Quando passados os parametros, pesquisa de acordo com eles.
-     * Quando não passados os paramtros, faz uma pesquisa de todos sem filtrar por nome e/ou nacionalidade.
+     * Quando não passados os parametros, faz uma pesquisa de todos sem filtrar por nome e/ou nacionalidade.
      */
     @GetMapping
     @PreAuthorize("hasAnyRole('OPERADOR', 'GERENTE')")

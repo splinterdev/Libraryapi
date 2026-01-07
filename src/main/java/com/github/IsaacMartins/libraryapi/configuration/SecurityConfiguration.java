@@ -1,7 +1,6 @@
 package com.github.IsaacMartins.libraryapi.configuration;
 
-import com.github.IsaacMartins.libraryapi.security.CustomUserDetailsService;
-import com.github.IsaacMartins.libraryapi.service.UserService;
+import com.github.IsaacMartins.libraryapi.security.SocialLoginSuccessHandler;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -10,18 +9,18 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
-import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.config.core.GrantedAuthorityDefaults;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
 @EnableWebSecurity
-@EnableMethodSecurity(securedEnabled = true, jsr250Enabled = true)
+@EnableMethodSecurity(securedEnabled = true, jsr250Enabled = true) // Pesquisar JSR250 para colocar um comentario explicando aqui
 public class SecurityConfiguration {
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http, SocialLoginSuccessHandler successHandler) throws Exception {
         return http
                 .csrf(AbstractHttpConfigurer::disable)
                 .httpBasic(Customizer.withDefaults())
@@ -37,6 +36,11 @@ public class SecurityConfiguration {
                     // se pelo menos o usuário estiver autenticado
                     authorize.anyRequest().authenticated();
                 }))
+                .oauth2Login(oAuth2 -> {
+                    // tratativa a ser realizada após login social (Ex: google) ser realizado com sucesso e retornar os dados do user
+                    oAuth2.loginPage("/login")
+                          .successHandler(successHandler);
+                })
                 .build();
     }
 
@@ -45,8 +49,8 @@ public class SecurityConfiguration {
         return new BCryptPasswordEncoder(10);
     }
 
-    @Bean
-    public UserDetailsService userDetailsService(UserService userService) {
+//    @Bean
+//    public UserDetailsService userDetailsService(UserService userService) {
 //        UserDetails user1 = User.builder()
 //                .username("user")
 //                .password(encoder.encode("123"))
@@ -58,7 +62,13 @@ public class SecurityConfiguration {
 //                .password(encoder.encode("321"))
 //                .roles("ADMIN")
 //                .build();
+//
+//        return new CustomUserDetailsService(userService);
+//    }
 
-        return new CustomUserDetailsService(userService);
+    //remove o prefixo 'ROLE_' das verificações de autorização
+    @Bean
+    public GrantedAuthorityDefaults grantedAuthorityDefaults() {
+        return new GrantedAuthorityDefaults("");
     }
 }
