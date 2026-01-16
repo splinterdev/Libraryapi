@@ -26,6 +26,8 @@ public class JwtCustomAuthenticationFilter extends OncePerRequestFilter {
 
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
+        // Se ele já for uma instancia de customAuthentication (unico authentication possível além de JwtAuthenticationToken)
+        // apenas continua com o filtro de autenticação, sem instanciar um CustomAuthentication
         if(mustConvert(auth)) {
 
             String login = auth.getName();
@@ -40,6 +42,10 @@ public class JwtCustomAuthenticationFilter extends OncePerRequestFilter {
         filterChain.doFilter(request, response);
     }
 
+    // Verifica se a authentication é uma instancia de JwtAuthenticationToken;
+    // Caso seja, realiza o processo de criação de authentication customizada;
+    // Necessária verificação pois pode já ser uma instancia de CustomAuthentication,
+    // por meio de httpBasic, form login ou Login social externo (nessa aplicação: Google)
     private boolean mustConvert(Authentication auth) {
         return auth instanceof JwtAuthenticationToken;
     }

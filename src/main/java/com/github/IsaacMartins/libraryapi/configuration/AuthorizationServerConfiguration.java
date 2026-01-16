@@ -68,6 +68,8 @@ public class AuthorizationServerConfiguration {
                     authorizationServerConfigurer.oidc(Customizer.withDefaults()); // ativa Open ID Connect (OIDC) -> Permite acesso as informações de Token (quem gerou, usuário, etc)
                 })
                 .authorizeHttpRequests(authorize -> authorize.anyRequest().authenticated())
+                // .oauth2ResourceServer Valida os tokens que foram emitidos pelo authorization server
+                // (oauth2Rs -> oauth2Rs.jwt(Customizer.withDefaults()) define os tipos de tokens que serão validados (JWT)
                 .oauth2ResourceServer(oauth2Rs -> oauth2Rs.jwt(Customizer.withDefaults()))
                 .formLogin(configurer -> configurer.loginPage("/login"))
                 .build();
@@ -81,7 +83,7 @@ public class AuthorizationServerConfiguration {
     @Bean
     public TokenSettings tokenSettings() {
         return TokenSettings.builder()
-                .accessTokenFormat(OAuth2TokenFormat.SELF_CONTAINED) // pesquisar sobre o que define a enum SELF_CONTAINED
+                .accessTokenFormat(OAuth2TokenFormat.SELF_CONTAINED) //
                 // access_token: utilizado nas requisições. Duração setada para 60 minutos
                 .accessTokenTimeToLive(Duration.ofMinutes(60))
                 // refresh_token: renova o access_token. Durante 90 minutos, o client pode requisitar um novo access_token com duração de 60
@@ -121,6 +123,8 @@ public class AuthorizationServerConfiguration {
                 .build();
     }
 
+    // serve para fornecer ao próprio servidor um decodificador de JWT configurado com o JWKSource definido na aplicação,
+    // permitindo que o servidor decodifique e valide tokens JWT assinados pelas suas chaves (do JWKSource)
     @Bean
     public JwtDecoder jwtDecoder(JWKSource<SecurityContext> jwkSource) {
         return OAuth2AuthorizationServerConfiguration.jwtDecoder(jwkSource);

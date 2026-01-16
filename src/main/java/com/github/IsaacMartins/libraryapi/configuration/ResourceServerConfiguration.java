@@ -60,6 +60,8 @@ public class ResourceServerConfiguration {
                 .oauth2ResourceServer(oauth2RS -> oauth2RS.jwt(Customizer.withDefaults()))
                 // adiciona filtro customizado no JwtAuthenticationToken (Authentication) gerado pelo BearerTokenAuthenticationFilter
                 // a partir do token JWT (Bearer token) recebido.
+                // importante: Esses dois filtros são chamados mesmo não tendo um token na requisição e uma CustomAuthentication já tendo sido
+                // instanciada, logo eles verificam se a authentication é uma instancia de custom para não realizar nada caso seja.
                 .addFilterAfter(jwtCustomAuthenticationFilter, BearerTokenAuthenticationFilter.class)
                 .build();
     }
