@@ -5,6 +5,7 @@ import com.github.IsaacMartins.libraryapi.controller.dto.InvalidField;
 import com.github.IsaacMartins.libraryapi.exceptions.DuplicatedRegisterException;
 import com.github.IsaacMartins.libraryapi.exceptions.NotAllowedOperation;
 import com.github.IsaacMartins.libraryapi.exceptions.RuleException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.validation.FieldError;
@@ -15,11 +16,13 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import java.util.List;
 
 @RestControllerAdvice
+@Slf4j
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.UNPROCESSABLE_ENTITY) // sempre retorna esse status (422)
     public ErrorResponse handleMethodArgsNotValidException(MethodArgumentNotValidException e) {
+        log.error("Validation error: {}", e.getMessage());
         List<FieldError> fieldErrors = e.getFieldErrors();
         List<InvalidField> errors = fieldErrors.stream().map(fe -> new InvalidField(fe.getField(), fe.getDefaultMessage())).toList();
 
@@ -53,7 +56,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(RuntimeException.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ErrorResponse handleUntreatedErrors(RuntimeException e) {
-        System.out.println(e.getMessage());
+        log.error("Unexpected error: {}", e);
         return new ErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(),
                 "An unexpected error occurred. Please contact the administration.", List.of());
     }

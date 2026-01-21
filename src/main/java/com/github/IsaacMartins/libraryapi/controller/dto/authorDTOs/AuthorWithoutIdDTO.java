@@ -1,5 +1,6 @@
 package com.github.IsaacMartins.libraryapi.controller.dto.authorDTOs;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Past;
@@ -7,6 +8,7 @@ import jakarta.validation.constraints.Size;
 
 import java.time.LocalDate;
 
+@Schema(name = "Autor")
 public record AuthorWithoutIdDTO(@NotBlank(message = "Required field!")
                                  @Size(min = 3, max = 100, message = "Invalid size.")
                                  String name,

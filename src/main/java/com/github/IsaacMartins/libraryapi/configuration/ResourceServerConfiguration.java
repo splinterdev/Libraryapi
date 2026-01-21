@@ -10,6 +10,7 @@ import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.core.GrantedAuthorityDefaults;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
@@ -39,7 +40,6 @@ public class ResourceServerConfiguration {
                                                                  JwtCustomAuthenticationFilter jwtCustomAuthenticationFilter) throws Exception {
         return http
                 .csrf(AbstractHttpConfigurer::disable)
-                .httpBasic(Customizer.withDefaults())
                 .formLogin(configurer -> {
                     configurer.loginPage("/login");
                 })
@@ -64,6 +64,23 @@ public class ResourceServerConfiguration {
                 // instanciada, logo eles verificam se a authentication é uma instancia de custom para não realizar nada caso seja.
                 .addFilterAfter(jwtCustomAuthenticationFilter, BearerTokenAuthenticationFilter.class)
                 .build();
+    }
+
+    // Remove endpoints do swagger da verificação com securityFilterChain.
+    // Adiciona-se um bean assim ao invés de um authorize.requestMatchers().permitAll() pois no permitAll
+    // o filtro de segurança ainda acontece e a requisição ainda vai ser testada. Com o Bean, SecurityFilterChain
+    // é ignorado e pulado para os endpoints definidos
+    @Bean
+    public WebSecurityCustomizer webSecurityCustomizer() {
+        return webSec -> webSec.ignoring().requestMatchers(
+                "/v2/api-docs/**",
+                         "/v3/api-docs/**",
+                         "/swagger-resources/**",
+                         "/swagger-ui.html",
+                         "/swagger-ui/**",
+                         "/webjars/**",
+                         "/actuator/**"
+                );
     }
 
     //remove o prefixo 'ROLE_' das verificações de autorização

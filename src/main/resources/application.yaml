@@ -1,6 +1,9 @@
 spring:
   application:
     name: libraryapi
+  output:
+    ansi:
+      enabled: ALWAYS
   datasource:
     url: jdbc:postgresql://localhost:5432/library
     username: postgres
@@ -13,3 +16,38 @@ spring:
           google:
             client-id: ${GOOGLE_CLIENT_ID}
             client-secret: ${GOOGLE_CLIENT_SECRET}
+
+springdoc:
+  override-with-generic-response: false # desabilita respostas genericas (Nessa api, respostas de erro padronizadas do ExceptionHandler)
+
+logging:
+  pattern:
+    console: '%clr(%d{dd/MM/yyyy HH:mm:ss}){blue} %clr(%5p) %clr([%t]){yellow} %clr(%-40.40logger){faint} %clr(:){yellow} %m%n'
+  file:
+    name:
+      libraryapi.log
+  level:
+    root: warn
+    com:
+      github:
+        IsaacMartins: trace
+    org:
+      springframework:
+        web: debug
+        security: trace
+
+# log levels (orderm crescente - do menor pro maior nível):
+# trace -> nivel mais detalhado; Rastreio minucioso.
+# debug -> informações de depuração (debug).
+# info -> informações sobre funcionamento geral da aplicação.
+# warn -> eventos potencialmente problemáticos.
+# error -> erros
+# hierárquico - habilitar 1 level irá habilitar todos os outros levels de nível superior junto ao habilitado.
+
+management: # keyword para configurar endpoints do actuator
+  server:
+    port: 9090
+  endpoints:
+    web:
+      exposure:
+        include: '*'
